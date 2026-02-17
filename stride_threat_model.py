@@ -233,6 +233,10 @@ SEVERITY_EMOJI = {
     "High": "🟠",
     "Medium": "🟡",
     "Low": "🟢",
+    "Crítica": "🔴",
+    "Alta": "🟠",
+    "Média": "🟡",
+    "Baixa": "🟢",
 }
 
 
@@ -342,12 +346,13 @@ def generate_report(
     lines.append("")
 
     # Count threats by severity
-    severity_counts = {"Crítica": 0, "Alta": 0, "Média": 0, "Baixa": 0, "Critical": 0, "High": 0, "Medium": 0, "Low": 0}
+    severity_counts = {"Crítica": 0, "Alta": 0, "Média": 0, "Baixa": 0}
     category_counts = {}
     for entry in stride_analysis:
         for t in entry.get("threats", []):
             sev = t.get("severity", "Baixa")
-            severity_counts[sev] = severity_counts.get(sev, 0) + 1
+            if sev in severity_counts:
+                severity_counts[sev] = severity_counts.get(sev, 0) + 1
             cat = t.get("category", "Outro")
             category_counts[cat] = category_counts.get(cat, 0) + 1
 
@@ -355,10 +360,9 @@ def generate_report(
     lines.append("")
     lines.append("| Severidade | Quantidade |")
     lines.append("|----------|-------|")
-    for sev in ["Crítica", "Alta", "Média", "Baixa", "Critical", "High", "Medium", "Low"]:
+    for sev in ["Crítica", "Alta", "Média", "Baixa"]:
         emoji = SEVERITY_EMOJI.get(sev, "⚪")
-        if emoji != "⚪":
-            lines.append(f"| {emoji} {sev} | {severity_counts.get(sev, 0)} |")
+        lines.append(f"| {emoji} {sev} | {severity_counts.get(sev, 0)} |")
     lines.append("")
 
     lines.append("### Por Categoria STRIDE")
